@@ -52,6 +52,14 @@
 
     <build>
         <finalName>mi-perfil-dev</finalName>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        
         <plugins>
             <!-- Plugin para compilación -->
             <plugin>
@@ -61,20 +69,23 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
 
-            <!-- Plugin WAR -->
+            <!-- Plugin WAR para generar el archivo WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
                 </configuration>
             </plugin>
 
-            <!-- Plugin Tomcat para desarrollo -->
+            <!-- Plugin Tomcat 7 para desarrollo local -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -82,6 +93,46 @@
                 <configuration>
                     <port>8080</port>
                     <path>/mi-perfil-dev</path>
+                    <server>localhost</server>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin Tomcat 9 para desarrollo local (alternativa más moderna) -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat9-maven-plugin</artifactId>
+                <version>3.0-alpha-1</version>
+                <configuration>
+                    <port>8080</port>
+                    <path>/mi-perfil-dev</path>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin para crear un archivo JAR ejecutable si lo necesitas -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin para ejecutar tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M9</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>

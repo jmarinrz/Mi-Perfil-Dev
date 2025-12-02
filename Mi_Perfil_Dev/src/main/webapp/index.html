@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil Dev - Portafolio de Habilidades</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mi Perfil Dev</h1>
+            <p class="subtitle">Portafolio de Habilidades de Programación</p>
+        </header>
+
+        <main>
+            <section id="perfil-section">
+                <h2>Mi Perfil</h2>
+                <div id="perfil-content" class="perfil-card">
+                    <p>Cargando perfil...</p>
+                </div>
+            </section>
+
+            <section id="habilidades-section">
+                <h2>Mis Habilidades</h2>
+                <div id="habilidades-content" class="habilidades-list">
+                    <p>Cargando habilidades...</p>
+                </div>
+            </section>
+
+            <section id="formulario-section">
+                <h2>Agregar Nueva Habilidad</h2>
+                <form id="habilidad-form">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nivel">Nivel:</label>
+                        <select id="nivel" name="nivel" required>
+                            <option value="Básico">Básico</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Avanzado">Avanzado</option>
+                            <option value="Experto">Experto</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experiencia">Años de Experiencia:</label>
+                        <input type="number" id="experiencia" name="experiencia" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" rows="4"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Agregar Habilidad</button>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Mi Perfil Dev. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+```
+╔════════════════════════════════════════════════════════════════════╗
+║                    MI PERFIL DEV - TOMCAT SETUP                   ║
+╚════════════════════════════════════════════════════════════════════╝
+
+📊 ESTRUCTURA DEL PROYECTO
+═══════════════════════════════════════════════════════════════════
+
+Mi_Perfil_Dev/
+├── 📄 pom.xml                        ← Configuración Maven
+├── 📄 TOMCAT_DEPLOYMENT.md           ← Guía completa de despliegue
+├── 📄 QUICK_START.md                 ← Guía rápida (LEER PRIMERO!)
+│
+├── 📂 src/main/java/
+│   └── com/mycompany/mi_perfil_dev/
+│       ├── 📂 controller/
+│       │   ├── habilidadController.java    (Servlets REST)
+│       │   └── perfilController.java
+│       ├── 📂 dao/
+│       │   ├── habilidadDAO.java           (Acceso a datos)
+│       │   └── perfilDAO.java
+│       ├── 📂 model/
+│       │   ├── Habilidad.java              (Modelos)
+│       │   └── Perfil.java
+│       └── 📂 util/
+│           └── JsonUtil.java               (Utilidades)
+│
+├── 📂 src/main/webapp/
+│   ├── 📄 index.html                 ← Página de inicio
+│   ├── 📄 error.html                 ← Página de error
+│   ├── 📂 WEB-INF/
+│   │   └── 📄 web.xml                ← Descriptor de despliegue
+│   ├── 📂 css/
+│   │   └── 📄 styles.css             ← Estilos
+│   └── 📂 js/
+│       ├── 📄 api.js                 ← Cliente API
+│       └── 📄 main.js                ← Lógica de UI
+│
+├── 📂 build/
+│   └── 📄 build.bat / build.sh       ← Scripts de compilación
+│   └── 📄 run.bat / run.sh           ← Scripts para ejecutar
+│
+└── 📂 target/
+    └── 📦 mi-perfil-dev.war          ← Archivo a desplegar
+
+
+🚀 TRES FORMAS DE DESPLEGAR
+═══════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────┐
+│ OPCIÓN 1: DESARROLLO RÁPIDO (Recomendado)                       │
+├─────────────────────────────────────────────────────────────────┤
+│ Windows:              Linux/Mac:                                │
+│ > build.bat          $ ./build.sh                               │
+│ > run.bat            $ ./run.sh                                 │
+│                                                                 │
+│ Resultado: http://localhost:8080/mi-perfil-dev                 │
+│ Ventaja: No necesitas instalar Tomcat                          │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ OPCIÓN 2: DESPLIEGUE MANUAL EN TOMCAT                           │
+├─────────────────────────────────────────────────────────────────┤
+│ 1. Compilar:   mvn clean package                               │
+│ 2. Descargar Tomcat de: https://tomcat.apache.org             │
+│ 3. Copiar: target/mi-perfil-dev.war → TOMCAT_HOME/webapps/   │
+│ 4. Ejecutar: TOMCAT_HOME/bin/startup.bat (Windows)            │
+│              TOMCAT_HOME/bin/startup.sh (Linux/Mac)            │
+│ 5. Acceder: http://localhost:8080/mi-perfil-dev               │
+│                                                                 │
+│ Ventaja: Control total sobre la instalación de Tomcat         │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ OPCIÓN 3: DESPLIEGUE EN SERVIDOR REMOTO                         │
+├─────────────────────────────────────────────────────────────────┤
+│ 1. Compilar localmente:                                         │
+│    mvn clean package                                            │
+│                                                                 │
+│ 2. Transferir al servidor:                                      │
+│    scp target/mi-perfil-dev.war usuario@servidor:/ruta/        │
+│                                                                 │
+│ 3. En el servidor:                                              │
+│    cp mi-perfil-dev.war /opt/tomcat/webapps/                  │
+│    sudo systemctl restart tomcat                                │
+│                                                                 │
+│ 4. Acceder:                                                     │
+│    http://tu-servidor.com:8080/mi-perfil-dev                  │
+│                                                                 │
+│ Ventaja: Producción profesional                                │
+└─────────────────────────────────────────────────────────────────┘
+
+
+📋 CHECKLIST PRE-DESPLIEGUE
+═══════════════════════════════════════════════════════════════════
+
+✅ Java 11+ instalado
+   $ java -version
+
+✅ Maven 3.6+ instalado
+   $ mvn -v
+
+✅ Archivo pom.xml presente
+   $ ls pom.xml
+
+✅ Fuentes Java compilables
+   $ mvn clean compile
+
+✅ Tests pasando (opcional)
+   $ mvn test
+
+✅ WAR generado correctamente
+   $ mvn package
+   → Verifica target/mi-perfil-dev.war
+
+✅ (Para Opción 2) Tomcat descargado y configurado
+   → Variables de entorno JAVA_HOME configuradas
+
+
+🔌 PUERTOS Y CONFIGURACIÓN
+═══════════════════════════════════════════════════════════════════
+
+Puerto por defecto: 8080
+URL base: http://localhost:8080/mi-perfil-dev
+
+Cambiar puerto en TOMCAT_HOME/conf/server.xml:
+<Connector port="8081" protocol="HTTP/1.1" ... />
+
+
+📊 ENDPOINTS API
+═══════════════════════════════════════════════════════════════════
+
+Perfil:
+  GET    /mi-perfil-dev/perfil              Obtener perfil
+  PUT    /mi-perfil-dev/perfil              Actualizar
+  DELETE /mi-perfil-dev/perfil              Eliminar
+
+Habilidades:
+  GET    /mi-perfil-dev/habilidades         Obtener todas
+  GET    /mi-perfil-dev/habilidades?id=... Obtener una
+  POST   /mi-perfil-dev/habilidades         Crear
+  PUT    /mi-perfil-dev/habilidades         Actualizar
+  DELETE /mi-perfil-dev/habilidades?id=... Eliminar
+
+
+📂 ALMACENAMIENTO DE DATOS
+═══════════════════════════════════════════════════════════════════
+
+Los datos se guardan en:
+  data/perfil.json
+
+Estructura:
+{
+  "nombre": "...",
+  "bio": "...",
+  "experiencia": "...",
+  "contacto": "...",
+  "fotoPerfil": "...",
+  "habilidades": [
+    {
+      "id": "uuid",
+      "nombre": "...",
+      "nivel": "...",
+      "experienciaAnios": 0,
+      "descripcion": "..."
+    }
+  ]
+}
+
+
+🛠️ COMANDOS MAVEN ÚTILES
+═══════════════════════════════════════════════════════════════════
+
+mvn clean              Limpiar archivos compilados
+mvn compile            Compilar código fuente
+mvn package            Generar WAR
+mvn clean package      Limpiar y generar WAR
+mvn test               Ejecutar tests
+mvn tomcat7:run        Ejecutar Tomcat embebido
+mvn dependency:tree    Ver dependencias
+mvn help:describe      Ver ayuda
+
+
+🐛 SOLUCIÓN DE PROBLEMAS COMUNES
+═══════════════════════════════════════════════════════════════════
+
+PROBLEMA: Puerto 8080 ya está en uso
+SOLUCIÓN: 
+  Windows: netstat -ano | findstr :8080
+  Linux:   lsof -i :8080
+  
+  O cambiar puerto en TOMCAT_HOME/conf/server.xml
+
+PROBLEMA: Maven no encontrado
+SOLUCIÓN:
+  - Instalar Maven: https://maven.apache.org/download.cgi
+  - Agregar a PATH (M2_HOME/bin)
+  - Verificar: mvn -v
+
+PROBLEMA: El WAR no se despliega
+SOLUCIÓN:
+  - Verificar que el nombre sea exacto: mi-perfil-dev.war
+  - Reiniciar Tomcat
+  - Ver logs: TOMCAT_HOME/logs/catalina.out
+  - Verificar permisos de la carpeta webapps
+
+PROBLEMA: Error 404 al acceder
+SOLUCIÓN:
+  - Verifica la URL: http://localhost:8080/mi-perfil-dev
+  - Asegúrate que la aplicación está desplegada
+  - Revisa los logs de Tomcat
+
+
+📚 RECURSOS ADICIONALES
+═══════════════════════════════════════════════════════════════════
+
+Tomcat: https://tomcat.apache.org/tomcat-9.0-doc/
+Maven: https://maven.apache.org/
+Servlets: https://docs.oracle.com/cd/E24329_01/web.1211/e24437/
+GSON: https://github.com/google/gson
+
+
+✨ SIGUIENTE PASO
+═══════════════════════════════════════════════════════════════════
+
+Lee QUICK_START.md para comenzar inmediatamente
+```

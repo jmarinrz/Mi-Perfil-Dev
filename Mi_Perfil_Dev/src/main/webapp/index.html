@@ -19,6 +19,51 @@
                 <div id="perfil-content" class="perfil-card">
                     <p>Cargando perfil...</p>
                 </div>
+                <button class="btn btn-primary" onclick="mostrarFormularioPerfil()" style="margin-top: 10px;">Editar Perfil</button>
+            </section>
+
+            <section id="editar-perfil-section" style="display: none;">
+                <h2>Editar Mi Perfil</h2>
+                <form id="perfil-form">
+                    <div class="perfil-form-container">
+                        <div class="foto-perfil-section">
+                            <div id="foto-preview" class="foto-preview">
+                                <img id="foto-img" src="" alt="Foto de perfil" style="display: none;">
+                                <p id="foto-placeholder" style="color: #9CA3AF;">Subir foto</p>
+                            </div>
+                            <input type="file" id="foto-input" name="foto" accept="image/*" style="display: none;">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="document.getElementById('foto-input').click()">Cambiar Foto</button>
+                            <button type="button" class="btn btn-danger btn-small" id="btn-eliminar-foto" style="display: none;" onclick="eliminarFotoPerfil()">Eliminar Foto</button>
+                        </div>
+
+                        <div class="form-fields">
+                            <div class="form-group">
+                                <label for="perfil-nombre">Nombre:</label>
+                                <input type="text" id="perfil-nombre" name="nombre" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="perfil-bio">Biografía:</label>
+                                <textarea id="perfil-bio" name="bio" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="perfil-experiencia">Años de Experiencia:</label>
+                                <input type="text" id="perfil-experiencia" name="experiencia" placeholder="Ej: 5 años">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="perfil-contacto">Contacto:</label>
+                                <input type="email" id="perfil-contacto" name="contacto" placeholder="tu@email.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+                        <button type="button" class="btn btn-secondary" onclick="ocultarFormularioPerfil()">Cancelar</button>
+                    </div>
+                </form>
             </section>
 
             <section id="habilidades-section">
@@ -29,8 +74,10 @@
             </section>
 
             <section id="formulario-section">
-                <h2>Agregar Nueva Habilidad</h2>
+                <h2 id="formulario-titulo">Agregar Nueva Habilidad</h2>
                 <form id="habilidad-form">
+                    <input type="hidden" id="habilidad-id" name="habilidad-id">
+
                     <div class="form-group">
                         <label for="nombre">Nombre:</label>
                         <input type="text" id="nombre" name="nombre" required>
@@ -56,7 +103,10 @@
                         <textarea id="descripcion" name="descripcion" rows="4"></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Agregar Habilidad</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="btn-submit">Agregar Habilidad</button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancelar" style="display: none;" onclick="cancelarEdicion()">Cancelar</button>
+                    </div>
                 </form>
             </section>
         </main>

@@ -2,10 +2,30 @@
  * Script principal para la interfaz de usuario
  */
 
+// Variable para almacenar el perfil actual
+let perfilActual = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     cargarDatos();
     setupFormListener();
+    setupFormularioPerfil();
 });
+
+/**
+ * Configura el listener para la carga de archivos de foto
+ */
+function setupFormularioPerfil() {
+    const fotoInput = document.getElementById('foto-input');
+    const perfilForm = document.getElementById('perfil-form');
+    
+    if (fotoInput) {
+        fotoInput.addEventListener('change', manejarCambioFoto);
+    }
+    
+    if (perfilForm) {
+        perfilForm.addEventListener('submit', manejarSubmitPerfil);
+    }
+}
 
 /**
  * Carga el perfil y las habilidades al iniciar
@@ -40,15 +60,25 @@ async function cargarPerfil() {
 function mostrarPerfil(perfil) {
     const perfilContent = document.getElementById('perfil-content');
     
+    // Guardar el perfil actual en memoria
+    perfilActual = perfil;
+    
     if (!perfil) {
         perfilContent.innerHTML = '<p>No hay perfil disponible.</p>';
         return;
     }
 
-    let html = `
-        <h3>${perfil.nombre || 'Sin nombre'}</h3>
-        <div class="perfil-info">
-    `;
+    let html = `<div class="perfil-display">`;
+    
+    if (perfil.fotoPerfil) {
+        html += `<div class="foto-perfil-display">
+                    <img src="${perfil.fotoPerfil}" alt="Foto de perfil">
+                 </div>`;
+    }
+    
+    html += `<div class="perfil-details">
+                <h3>${perfil.nombre || 'Sin nombre'}</h3>
+                <div class="perfil-info">`;
 
     if (perfil.bio) {
         html += `<p><strong>Bio:</strong> ${perfil.bio}</p>`;
@@ -62,11 +92,7 @@ function mostrarPerfil(perfil) {
         html += `<p><strong>Contacto:</strong> ${perfil.contacto}</p>`;
     }
 
-    if (perfil.fotoPerfil) {
-        html += `<p><strong>Foto de Perfil:</strong> ${perfil.fotoPerfil}</p>`;
-    }
-
-    html += '</div>';
+    html += `</div></div></div>`;
     perfilContent.innerHTML = html;
 }
 
@@ -138,6 +164,7 @@ function setupFormListener() {
 async function manejarSubmitFormulario(event) {
     event.preventDefault();
 
+    const id = document.getElementById('habilidad-id').value;
     const nombre = document.getElementById('nombre').value;
     const nivel = document.getElementById('nivel').value;
     const experiencia = parseInt(document.getElementById('experiencia').value);
@@ -151,22 +178,68 @@ async function manejarSubmitFormulario(event) {
     };
 
     try {
-        const resultado = await crearHabilidad(habilidad);
-        mostrarExito('Habilidad creada correctamente');
-        document.getElementById('habilidad-form').reset();
+        if (id) {
+            // Modo edición: actualizar habilidad existente
+            habilidad.id = id;
+            const resultado = await actualizarHabilidad(habilidad);
+            mostrarExito('Habilidad actualizada correctamente');
+        } else {
+            // Modo creación: crear nueva habilidad
+            const resultado = await crearHabilidad(habilidad);
+            mostrarExito('Habilidad creada correctamente');
+        }
+        
+        limpiarFormulario();
         await cargarHabilidades();
     } catch (error) {
-        console.error('Error al crear habilidad:', error);
-        mostrarError('Error al crear la habilidad');
+        console.error('Error al guardar habilidad:', error);
+        mostrarError('Error al guardar la habilidad');
     }
 }
 
 /**
- * Edita una habilidad (función placeholder)
+ * Carga una habilidad en el formulario para editar
  */
-function editarHabilidad(id) {
-    alert(`Editar habilidad: ${id}`);
-    // Implementar lógica de edición
+async function editarHabilidad(id) {
+    try {
+        const habilidad = await obtenerHabilidad(id);
+        
+        // Llenar el formulario con los datos de la habilidad
+        document.getElementById('habilidad-id').value = habilidad.id;
+        document.getElementById('nombre').value = habilidad.nombre;
+        document.getElementById('nivel').value = habilidad.nivel;
+        document.getElementById('experiencia').value = habilidad.experienciaAnios;
+        document.getElementById('descripcion').value = habilidad.descripcion || '';
+        
+        // Cambiar título y botón del formulario
+        document.getElementById('formulario-titulo').textContent = 'Editar Habilidad';
+        document.getElementById('btn-submit').textContent = 'Actualizar Habilidad';
+        document.getElementById('btn-cancelar').style.display = 'inline-block';
+        
+        // Scroll al formulario
+        document.getElementById('formulario-section').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Error al obtener habilidad para editar:', error);
+        mostrarError('Error al cargar la habilidad para editar');
+    }
+}
+
+/**
+ * Cancela la edición y limpia el formulario
+ */
+function cancelarEdicion() {
+    limpiarFormulario();
+}
+
+/**
+ * Limpia el formulario y lo prepara para crear una nueva habilidad
+ */
+function limpiarFormulario() {
+    document.getElementById('habilidad-form').reset();
+    document.getElementById('habilidad-id').value = '';
+    document.getElementById('formulario-titulo').textContent = 'Agregar Nueva Habilidad';
+    document.getElementById('btn-submit').textContent = 'Agregar Habilidad';
+    document.getElementById('btn-cancelar').style.display = 'none';
 }
 
 /**
@@ -219,4 +292,132 @@ function mostrarMensaje(mensaje, tipo) {
             alert.remove();
         }
     }, 5000);
+}
+
+/**
+ * Muestra el formulario de edición de perfil
+ */
+function mostrarFormularioPerfil() {
+    const perfilSection = document.getElementById('perfil-section');
+    const editarSection = document.getElementById('editar-perfil-section');
+    
+    // Cargar datos actuales en el formulario
+    if (perfilActual) {
+        document.getElementById('perfil-nombre').value = perfilActual.nombre || '';
+        document.getElementById('perfil-bio').value = perfilActual.bio || '';
+        document.getElementById('perfil-experiencia').value = perfilActual.experiencia || '';
+        document.getElementById('perfil-contacto').value = perfilActual.contacto || '';
+        
+        if (perfilActual.fotoPerfil) {
+            document.getElementById('foto-img').src = perfilActual.fotoPerfil;
+            document.getElementById('foto-img').style.display = 'block';
+            document.getElementById('foto-placeholder').style.display = 'none';
+            document.getElementById('btn-eliminar-foto').style.display = 'inline-block';
+        } else {
+            document.getElementById('foto-img').style.display = 'none';
+            document.getElementById('foto-placeholder').style.display = 'block';
+            document.getElementById('btn-eliminar-foto').style.display = 'none';
+        }
+    }
+    
+    perfilSection.style.display = 'none';
+    editarSection.style.display = 'block';
+    editarSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Oculta el formulario de edición de perfil
+ */
+function ocultarFormularioPerfil() {
+    document.getElementById('perfil-section').style.display = 'block';
+    document.getElementById('editar-perfil-section').style.display = 'none';
+}
+
+/**
+ * Maneja el cambio de foto de perfil
+ */
+function manejarCambioFoto(event) {
+    const file = event.target.files[0];
+    
+    if (!file) {
+        return;
+    }
+    
+    // Validar que sea una imagen
+    if (!file.type.startsWith('image/')) {
+        mostrarError('Por favor selecciona un archivo de imagen');
+        return;
+    }
+    
+    // Validar tamaño máximo (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        mostrarError('La imagen no debe pesar más de 5MB');
+        event.target.value = '';
+        return;
+    }
+    
+    // Convertir a Base64
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        
+        // Mostrar preview
+        document.getElementById('foto-img').src = base64;
+        document.getElementById('foto-img').style.display = 'block';
+        document.getElementById('foto-placeholder').style.display = 'none';
+        document.getElementById('btn-eliminar-foto').style.display = 'inline-block';
+        
+        // Guardar la imagen en memoria
+        perfilActual.fotoPerfil = base64;
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Elimina la foto de perfil
+ */
+function eliminarFotoPerfil() {
+    document.getElementById('foto-input').value = '';
+    document.getElementById('foto-img').src = '';
+    document.getElementById('foto-img').style.display = 'none';
+    document.getElementById('foto-placeholder').style.display = 'block';
+    document.getElementById('btn-eliminar-foto').style.display = 'none';
+    
+    if (perfilActual) {
+        perfilActual.fotoPerfil = '';
+    }
+}
+
+/**
+ * Maneja el envío del formulario de perfil
+ */
+async function manejarSubmitPerfil(event) {
+    event.preventDefault();
+    
+    const nombre = document.getElementById('perfil-nombre').value;
+    const bio = document.getElementById('perfil-bio').value;
+    const experiencia = document.getElementById('perfil-experiencia').value;
+    const contacto = document.getElementById('perfil-contacto').value;
+    
+    const perfil = {
+        nombre,
+        bio,
+        experiencia,
+        contacto,
+        fotoPerfil: perfilActual?.fotoPerfil || '',
+        habilidades: perfilActual?.habilidades || []
+    };
+    
+    try {
+        const resultado = await actualizarPerfil(perfil);
+        mostrarExito('Perfil actualizado correctamente');
+        
+        // Recargar perfil
+        await cargarPerfil();
+        ocultarFormularioPerfil();
+    } catch (error) {
+        console.error('Error al actualizar perfil:', error);
+        mostrarError('Error al actualizar el perfil');
+    }
 }
